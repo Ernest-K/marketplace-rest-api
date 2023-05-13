@@ -7,23 +7,16 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "offers")
-public class Offer {
+@Table(name = "categories")
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String description;
-    private Double price;
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User user;
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
 }
