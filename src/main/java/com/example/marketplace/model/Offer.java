@@ -1,5 +1,6 @@
 package com.example.marketplace.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,9 @@ public class Offer {
 
     private Double price;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+//    @JsonBackReference
     private User user;
 
     @ManyToOne
