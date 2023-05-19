@@ -3,7 +3,6 @@ package com.example.marketplace.service.impl;
 import com.example.marketplace.dto.UserResponse;
 import com.example.marketplace.exception.UserNotFoundException;
 import com.example.marketplace.mapper.UserMapper;
-import com.example.marketplace.model.User;
 import com.example.marketplace.repository.UserRepository;
 import com.example.marketplace.service.UserService;
 import lombok.RequiredArgsConstructor;

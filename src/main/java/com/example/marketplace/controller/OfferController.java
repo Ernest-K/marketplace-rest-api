@@ -34,4 +34,9 @@ public class OfferController {
     public ResponseEntity<List<OfferResponse>> getOffersByCategoryId(@RequestParam Long categoryId){
         return new ResponseEntity<>(offerService.getOffersByCategoryId(categoryId), HttpStatus.OK);
     }
+
+    @GetMapping(params = "userId")
+    public ResponseEntity<List<OfferResponse>> getOffersByUserId(@RequestParam Long userId){
+        return new ResponseEntity<>(offerService.getOffersByUserId(userId), HttpStatus.OK);
+    }
 }
