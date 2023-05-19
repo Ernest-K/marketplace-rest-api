@@ -13,10 +13,12 @@ public class UserMapper implements Function<User, UserResponse> {
 
     @Override
     public UserResponse apply(User user) {
-        return new UserResponse(user.getUsername(),
+        return new UserResponse(user.getId(),
+                user.getUsername(),
                 user.getEmail(),
                 user.getOffers().stream().map(offer ->
-                        new OfferResponse(offer.getName(),
+                        new OfferResponse(offer.getId(),
+                                offer.getName(),
                                 offer.getDescription(),
                                 offer.getPrice(),
                                 offer.getUser().getId(),
