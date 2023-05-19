@@ -9,4 +9,6 @@ public interface OfferService {
     List<OfferResponse> getOffers();
 
     List<OfferResponse> getOffersByCategoryId(Long id);
+
+    List<OfferResponse> getOffersByUserId(Long id);
 }
