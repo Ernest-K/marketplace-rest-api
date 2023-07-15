@@ -30,8 +30,14 @@ public class SecurityConfig{
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         httpSecurity.authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/auth/**", "/h2-console/**").permitAll()
                 .anyRequest().authenticated();
+
+        httpSecurity.headers().frameOptions().disable();
+
+//        httpSecurity.formLogin();
+//
+//        httpSecurity.httpBasic();
 
         return httpSecurity.build();
     }
