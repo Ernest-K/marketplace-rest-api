@@ -6,10 +6,10 @@ import com.example.marketplace.model.User;
 import com.example.marketplace.repository.CategoryRepository;
 import com.example.marketplace.repository.OfferRepository;
 import com.example.marketplace.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 
 @RequiredArgsConstructor
 @Component
