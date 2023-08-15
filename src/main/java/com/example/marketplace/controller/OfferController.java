@@ -40,7 +40,7 @@ public class OfferController {
         return new ResponseEntity<>(offerService.getOffersByCategoryName(categoryName), HttpStatus.OK);
     }
 
-    @GetMapping("/count")
+    @GetMapping("/offers/count")
     public ResponseEntity<List<OfferCount>> getCountOffersByCategory(){
         return new ResponseEntity<>(offerService.getCountOffersByCategory(), HttpStatus.OK);
     }
