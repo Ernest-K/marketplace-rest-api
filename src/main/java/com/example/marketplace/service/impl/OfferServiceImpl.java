@@ -1,5 +1,6 @@
 package com.example.marketplace.service.impl;
 
+import com.example.marketplace.dto.OfferCount;
 import com.example.marketplace.dto.OfferResponse;
 import com.example.marketplace.exception.CategoryNotFoundException;
 import com.example.marketplace.exception.OfferNotFoundException;
@@ -32,7 +33,7 @@ public class OfferServiceImpl implements OfferService {
     public OfferResponse getOffer(Long id) {
         return offerRepository.findById(id)
                 .map(offerMapper)
-                .orElseThrow(() -> new OfferNotFoundException(id.toString()));
+                .orElseThrow(() -> new OfferNotFoundException("No offer with ID: " + id.toString()));
     }
 
     @Override
@@ -61,5 +62,10 @@ public class OfferServiceImpl implements OfferService {
         return offerRepository.findAllByUserId(userId)
                 .stream().map(offerMapper)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<OfferCount> getCountOffersByCategory(){
+        return offerRepository.countTotalOffersByCategory();
     }
 }

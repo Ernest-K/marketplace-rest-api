@@ -1,5 +1,6 @@
 package com.example.marketplace.controller;
 
+import com.example.marketplace.dto.OfferCount;
 import com.example.marketplace.dto.OfferResponse;
 import com.example.marketplace.service.OfferService;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,10 @@ public class OfferController {
     @GetMapping(params = "userId")
     public ResponseEntity<List<OfferResponse>> getOffersByUserId(@RequestParam Long userId){
         return new ResponseEntity<>(offerService.getOffersByUserId(userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<List<OfferCount>> getCountOffersByCategory(){
+        return new ResponseEntity<>(offerService.getCountOffersByCategory(), HttpStatus.OK);
     }
 }

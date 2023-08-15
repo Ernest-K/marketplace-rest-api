@@ -1,5 +1,6 @@
 package com.example.marketplace.service;
 
+import com.example.marketplace.dto.OfferCount;
 import com.example.marketplace.dto.OfferResponse;
 
 import java.util.List;
@@ -11,4 +12,6 @@ public interface OfferService {
     List<OfferResponse> getOffersByCategoryId(Long id);
 
     List<OfferResponse> getOffersByUserId(Long id);
+
+    List<OfferCount> getCountOffersByCategory();
 }
