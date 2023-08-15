@@ -11,22 +11,21 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/users")
+@RequestMapping("/api")
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable Long id){
-        UserResponse userResponse = userService.getUser(id);
+    @GetMapping("/users")
+    public ResponseEntity<List<UserResponse>> getAllUsers(){
+        return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
+    }
+    @GetMapping("/users/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id){
+        UserResponse userResponse = userService.getUserById(id);
         if(userResponse == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers(){
-        return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
 }

@@ -21,18 +21,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponse getUser(Long id) {
-        return userRepository.findById(id)
-                .map(userMapper)
-                .orElseThrow(()-> new UserNotFoundException(id.toString()));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<UserResponse> getUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(userMapper)
                 .collect(Collectors.toList());
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponse getUserById(Long id) {
+        return userRepository.findById(id)
+                .map(userMapper)
+                .orElseThrow(()-> new UserNotFoundException(id.toString()));
     }
 }
