@@ -77,6 +77,30 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler
         return buildResponseEntity(apiError);
     }
 
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<Object> handleCategoryNotFoundException(CategoryNotFoundException ex, WebRequest webRequest){
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
+        apiError.setMessage(ex.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(CategoryExistsException.class)
+    public ResponseEntity<Object> handleCategoryExistsException(CategoryExistsException ex, WebRequest webRequest){
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setMessage(ex.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex, WebRequest webRequest){
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
+        apiError.setMessage(ex.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError){
         return new ResponseEntity<>(apiError, apiError.getHttpStatus());
     }
