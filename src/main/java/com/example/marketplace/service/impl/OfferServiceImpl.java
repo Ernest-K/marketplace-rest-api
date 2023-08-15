@@ -30,7 +30,7 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @Transactional(readOnly = true)
-    public OfferResponse getOffer(Long id) {
+    public OfferResponse getOfferById(Long id) {
         return offerRepository.findById(id)
                 .map(offerMapper)
                 .orElseThrow(() -> new OfferNotFoundException("No offer with ID: " + id.toString()));
@@ -46,10 +46,11 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OfferResponse> getOffersByCategoryId(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException(categoryId.toString()));
-        return offerRepository.findAllByCategoryId(categoryId)
+    public List<OfferResponse> getOffersByCategoryName(String categoryName) {
+        Category category = categoryRepository.findByNameIgnoreCase(categoryName)
+                .orElseThrow(() -> new CategoryNotFoundException("No category with name: "+ categoryName.toString()));
+        System.out.println(categoryName);
+        return offerRepository.findAllByCategoryId(category.getId())
                 .stream().map(offerMapper)
                 .collect(Collectors.toList());
     }
