@@ -19,4 +19,6 @@ public interface OfferService {
     List<OfferCount> getCountOffersByCategory();
 
     OfferResponse createOffer(Long userId, OfferRequest offerRequest);
+
+    OfferResponse updateOffer(Long userId, Long offerId, OfferRequest offerRequest);
 }

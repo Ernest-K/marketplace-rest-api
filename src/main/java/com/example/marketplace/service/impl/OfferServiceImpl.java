@@ -26,7 +26,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -86,7 +90,8 @@ public class OfferServiceImpl implements OfferService {
     @Override
     @Transactional
     public OfferResponse createOffer(Long userId, OfferRequest offerRequest) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("No user with id: " + userId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("No user with id: " + userId));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
 
@@ -94,7 +99,8 @@ public class OfferServiceImpl implements OfferService {
             throw new AccessDeniedException("Not allowed to create offer");
         }
 
-        Category category = categoryRepository.findById(offerRequest.getCategoryId()).orElseThrow(() -> new CategoryNotFoundException("No category with id: " + offerRequest.getCategoryId()));
+        Category category = categoryRepository.findById(offerRequest.getCategoryId())
+                .orElseThrow(() -> new CategoryNotFoundException("No category with id: " + offerRequest.getCategoryId()));
 
         Offer offer = new Offer();
         offer.setName(offerRequest.getName());
@@ -104,6 +110,39 @@ public class OfferServiceImpl implements OfferService {
         offer.setCategory(category);
 
         return mapToDto(offerRepository.save(offer));
+    }
+
+    @Override
+    public OfferResponse updateOffer(Long userId, Long offerId, OfferRequest offerRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("No user with id: " + userId));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
+
+        if (!user.getId().equals(authenticatedSecurityUser.getId())){
+            throw new AccessDeniedException("Not allowed to update offer");
+        }
+
+        Offer offerToUpdate = offerRepository.findById(offerId)
+                .orElseThrow(() -> new OfferNotFoundException("No offer with id: " + offerId));
+
+        Map<String, Object> dtoMap = convertDtoToMap(offerRequest);
+
+        for (Map.Entry<String, Object> entry : dtoMap.entrySet()) {
+            String fieldName = entry.getKey();
+            Object newValue = entry.getValue();
+            if (newValue != null){
+                if (fieldName.equals("categoryId")){
+                    Category newCategory = categoryRepository.findById((Long) newValue)
+                            .orElseThrow(() -> new CategoryNotFoundException("No category with id: " + newValue));
+                    updateFieldInEntity(offerToUpdate, "category", newCategory);
+                }else{
+                    updateFieldInEntity(offerToUpdate, fieldName, newValue);
+                }
+            }
+        }
+
+        return mapToDto(offerRepository.save(offerToUpdate));
     }
 
     private OfferPageResponse buildOfferPageResponse(Page<Offer> offerPage){
@@ -121,6 +160,39 @@ public class OfferServiceImpl implements OfferService {
     }
 
     private OfferResponse mapToDto(Offer offer){
-        return new OfferResponse(offer.getId(), offer.getName(), offer.getDescription(), offer.getPrice(), offer.getUser().getId(), offer.getCategory());
+        return new OfferResponse(offer.getId(),
+                offer.getName(),
+                offer.getDescription(),
+                offer.getPrice(),
+                offer.getUser().getId(),
+                offer.getCategory());
+    }
+
+    private Map<String, Object> convertDtoToMap(OfferRequest offerRequest){
+        Map<String, Object> dtoMap = new HashMap<>();
+
+        Field[] fields = offerRequest.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            Object value = null;
+            try {
+                value = field.get(offerRequest);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            dtoMap.put(field.getName(), value);
+        }
+
+        return dtoMap;
+    }
+
+    private void updateFieldInEntity(Offer offer, String fieldName, Object newValue) {
+        try {
+            Field field = offer.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(offer, newValue);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
