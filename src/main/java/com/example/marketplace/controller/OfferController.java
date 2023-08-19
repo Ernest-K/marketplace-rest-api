@@ -1,6 +1,7 @@
 package com.example.marketplace.controller;
 
 import com.example.marketplace.dto.OfferCount;
+import com.example.marketplace.dto.OfferPageResponse;
 import com.example.marketplace.dto.OfferResponse;
 import com.example.marketplace.service.OfferService;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,10 @@ public class OfferController {
     private final OfferService offerService;
 
     @GetMapping("/offers")
-    public ResponseEntity<List<OfferResponse>> getAllOffers(){
-        return new ResponseEntity<>(offerService.getOffers(), HttpStatus.OK);
+    public ResponseEntity<OfferPageResponse> getAllOffers(@RequestParam(defaultValue = "0", required = false) Integer pageNo, @RequestParam(defaultValue = "10", required = false) Integer pageSize){
+        return new ResponseEntity<>(offerService.getOffers(pageNo, pageSize), HttpStatus.OK);
     }
+
     @GetMapping("/offers/{id}")
     public ResponseEntity<OfferResponse> getOfferById(@PathVariable Long id){
         OfferResponse offerResponse = offerService.getOfferById(id);
@@ -31,13 +33,13 @@ public class OfferController {
     }
 
     @GetMapping("/users/{userId}/offers")
-    public ResponseEntity<List<OfferResponse>> getOffersByUserId(@PathVariable Long userId){
-        return new ResponseEntity<>(offerService.getOffersByUserId(userId), HttpStatus.OK);
+    public ResponseEntity<OfferPageResponse> getOffersByUserId(@PathVariable Long userId, @RequestParam(defaultValue = "0", required = false) Integer pageNo, @RequestParam(defaultValue = "10", required = false) Integer pageSize){
+        return new ResponseEntity<>(offerService.getOffersByUserId(userId, pageNo, pageSize), HttpStatus.OK);
     }
 
     @GetMapping(value = "/offers", params = "categoryName")
-    public ResponseEntity<List<OfferResponse>> getOffersByCategoryName(@RequestParam String categoryName){
-        return new ResponseEntity<>(offerService.getOffersByCategoryName(categoryName), HttpStatus.OK);
+    public ResponseEntity<OfferPageResponse> getOffersByCategoryName(@RequestParam String categoryName, @RequestParam(defaultValue = "0", required = false) Integer pageNo, @RequestParam(defaultValue = "10", required = false) Integer pageSize){
+        return new ResponseEntity<>(offerService.getOffersByCategoryName(categoryName, pageNo, pageSize), HttpStatus.OK);
     }
 
     @GetMapping("/offers/count")

@@ -8,7 +8,10 @@ import java.util.List;
 
 public interface UserService {
     List<UserResponse> getUsers();
+
     UserResponse getUserById(Long id);
-    UserResponse updateUser(Long id, UpdateUserRequest updateUserRequest) throws MethodNotAllowedException;
+
+    UserResponse updateUser(Long id, UpdateUserRequest updateUserRequest);
+
     void deleteUser(Long id);
 }
