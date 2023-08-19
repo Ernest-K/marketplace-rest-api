@@ -2,11 +2,14 @@ package com.example.marketplace.controller;
 
 import com.example.marketplace.dto.OfferCount;
 import com.example.marketplace.dto.OfferPageResponse;
+import com.example.marketplace.dto.OfferRequest;
 import com.example.marketplace.dto.OfferResponse;
 import com.example.marketplace.service.OfferService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,11 +28,7 @@ public class OfferController {
 
     @GetMapping("/offers/{id}")
     public ResponseEntity<OfferResponse> getOfferById(@PathVariable Long id){
-        OfferResponse offerResponse = offerService.getOfferById(id);
-        if (offerResponse == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(offerResponse, HttpStatus.OK);
+        return new ResponseEntity<>(offerService.getOfferById(id), HttpStatus.OK);
     }
 
     @GetMapping("/users/{userId}/offers")
@@ -45,5 +44,11 @@ public class OfferController {
     @GetMapping("/offers/count")
     public ResponseEntity<List<OfferCount>> getCountOffersByCategory(){
         return new ResponseEntity<>(offerService.getCountOffersByCategory(), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/users/{userId}/offers")
+    public ResponseEntity<OfferResponse> createOffer(@PathVariable Long userId, @RequestBody @Valid OfferRequest offerRequest){
+        return new ResponseEntity<>(offerService.createOffer(userId, offerRequest), HttpStatus.CREATED);
     }
 }
