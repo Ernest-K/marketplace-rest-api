@@ -1,7 +1,7 @@
 package com.example.marketplace.service.impl;
 
-import com.example.marketplace.dto.UpdateUserRequest;
-import com.example.marketplace.dto.UserResponse;
+import com.example.marketplace.dto.request.UpdateUserRequest;
+import com.example.marketplace.dto.response.UserResponse;
 import com.example.marketplace.exception.UserNotFoundException;
 import com.example.marketplace.mapper.UserMapper;
 import com.example.marketplace.model.SecurityUser;

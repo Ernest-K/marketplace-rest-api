@@ -1,6 +1,6 @@
 package com.example.marketplace.mapper;
 
-import com.example.marketplace.dto.UserResponse;
+import com.example.marketplace.dto.response.UserResponse;
 import com.example.marketplace.model.User;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
 package com.example.marketplace.controller;
 
-import com.example.marketplace.dto.CategoryRequest;
+import com.example.marketplace.dto.request.CategoryRequest;
 import com.example.marketplace.model.Category;
 import com.example.marketplace.service.CategoryService;
 import jakarta.validation.Valid;

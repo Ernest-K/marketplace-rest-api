@@ -1,6 +1,6 @@
 package com.example.marketplace.mapper;
 
-import com.example.marketplace.dto.OfferResponse;
+import com.example.marketplace.dto.response.OfferResponse;
 import com.example.marketplace.model.Offer;
 import org.springframework.stereotype.Component;
 

@@ -1,9 +1,9 @@
 package com.example.marketplace.service;
 
-import com.example.marketplace.dto.OfferCount;
-import com.example.marketplace.dto.OfferPageResponse;
-import com.example.marketplace.dto.OfferRequest;
-import com.example.marketplace.dto.OfferResponse;
+import com.example.marketplace.dto.response.OfferCount;
+import com.example.marketplace.dto.response.OfferPageResponse;
+import com.example.marketplace.dto.request.OfferRequest;
+import com.example.marketplace.dto.response.OfferResponse;
 
 import java.util.List;
 

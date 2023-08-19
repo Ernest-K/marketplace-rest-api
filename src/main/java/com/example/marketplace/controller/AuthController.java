@@ -1,6 +1,6 @@
 package com.example.marketplace.controller;
 
-import com.example.marketplace.dto.RegisterRequest;
+import com.example.marketplace.dto.request.RegisterRequest;
 import com.example.marketplace.service.impl.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.example.marketplace.service.impl;
 
-import com.example.marketplace.dto.CategoryRequest;
+import com.example.marketplace.dto.request.CategoryRequest;
 import com.example.marketplace.exception.CategoryExistsException;
 import com.example.marketplace.exception.CategoryNotFoundException;
 import com.example.marketplace.model.Category;

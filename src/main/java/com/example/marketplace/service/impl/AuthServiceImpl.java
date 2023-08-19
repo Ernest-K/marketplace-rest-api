@@ -1,6 +1,6 @@
 package com.example.marketplace.service.impl;
 
-import com.example.marketplace.dto.RegisterRequest;
+import com.example.marketplace.dto.request.RegisterRequest;
 import com.example.marketplace.exception.UserExistsException;
 import com.example.marketplace.model.Role;
 import com.example.marketplace.model.User;

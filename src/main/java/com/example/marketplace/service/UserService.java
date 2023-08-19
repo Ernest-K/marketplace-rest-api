@@ -1,8 +1,7 @@
 package com.example.marketplace.service;
 
-import com.example.marketplace.dto.UpdateUserRequest;
-import com.example.marketplace.dto.UserResponse;
-import org.springframework.web.server.MethodNotAllowedException;
+import com.example.marketplace.dto.request.UpdateUserRequest;
+import com.example.marketplace.dto.response.UserResponse;
 
 import java.util.List;
 

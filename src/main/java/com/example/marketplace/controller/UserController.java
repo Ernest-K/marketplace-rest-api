@@ -1,8 +1,8 @@
 package com.example.marketplace.controller;
 
 
-import com.example.marketplace.dto.UpdateUserRequest;
-import com.example.marketplace.dto.UserResponse;
+import com.example.marketplace.dto.request.UpdateUserRequest;
+import com.example.marketplace.dto.response.UserResponse;
 import com.example.marketplace.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

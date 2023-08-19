@@ -1,4 +1,4 @@
-package com.example.marketplace.dto;
+package com.example.marketplace.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

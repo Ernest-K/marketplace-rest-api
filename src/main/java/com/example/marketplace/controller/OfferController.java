@@ -1,9 +1,9 @@
 package com.example.marketplace.controller;
 
-import com.example.marketplace.dto.OfferCount;
-import com.example.marketplace.dto.OfferPageResponse;
-import com.example.marketplace.dto.OfferRequest;
-import com.example.marketplace.dto.OfferResponse;
+import com.example.marketplace.dto.response.OfferCount;
+import com.example.marketplace.dto.response.OfferPageResponse;
+import com.example.marketplace.dto.request.OfferRequest;
+import com.example.marketplace.dto.response.OfferResponse;
 import com.example.marketplace.service.OfferService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.example.marketplace.service;
 
-import com.example.marketplace.dto.CategoryRequest;
+import com.example.marketplace.dto.request.CategoryRequest;
 import com.example.marketplace.model.Category;
 
 import java.util.List;

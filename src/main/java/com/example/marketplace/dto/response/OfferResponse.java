@@ -1,4 +1,4 @@
-package com.example.marketplace.dto;
+package com.example.marketplace.dto.response;
 
 import com.example.marketplace.model.Category;
 
