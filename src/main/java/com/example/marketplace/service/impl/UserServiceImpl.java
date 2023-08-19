@@ -9,6 +9,7 @@ import com.example.marketplace.model.User;
 import com.example.marketplace.repository.UserRepository;
 import com.example.marketplace.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,13 +48,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse updateUser(Long id, UpdateUserRequest updateUserRequest){
+    public UserResponse updateUser(Long id, UpdateUserRequest updateUserRequest) {
         User userToUpdate = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("No user with id: " + id));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
 
         if (!userToUpdate.getId().equals(authenticatedSecurityUser.getId())){
-            throw new RuntimeException("Not allowed to update user");
+            throw new AccessDeniedException("Not allowed to update");
         }
 
         Map<String, Object> dtoMap = convertDtoToMap(updateUserRequest);
@@ -81,7 +82,7 @@ public class UserServiceImpl implements UserService {
         SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
 
         if (!userToDelete.getId().equals(authenticatedSecurityUser.getId())){
-            throw new RuntimeException("Not allowed to delete user");
+            throw new AccessDeniedException("Not allowed to delete");
         }
 
         userRepository.delete(userToDelete);
