@@ -3,11 +3,14 @@ package com.example.marketplace.model;
 import lombok.*;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.DynamicUpdate;
+
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @Entity
+@DynamicUpdate
 @Table(name = "users")
 public class User{
 
@@ -15,7 +18,7 @@ public class User{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 20)
+    @Column(length = 30)
     private String username;
 
     @Column
@@ -29,7 +32,7 @@ public class User{
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
 //    @JsonManagedReference
     private List<Offer> offers;
 

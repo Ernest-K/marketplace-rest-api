@@ -13,6 +13,10 @@ public class SecurityUser implements UserDetails {
 
     private User user;
 
+    public Long getId(){
+        return user.getId();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
