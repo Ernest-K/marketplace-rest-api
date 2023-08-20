@@ -57,4 +57,11 @@ public class OfferController {
     public ResponseEntity<OfferResponse> updateOffer(@PathVariable Long userId, @PathVariable Long offerId, @RequestBody @Valid OfferRequest offerRequest){
         return new ResponseEntity<>(offerService.updateOffer(userId, offerId, offerRequest), HttpStatus.OK);
     }
+
+    @PreAuthorize("hasAnyRole('USER')")
+    @DeleteMapping("/users/{userId}/offers/{offerId}")
+    public ResponseEntity<String> deleteOffer(@PathVariable Long userId, @PathVariable Long offerId){
+        offerService.deleteOffer(userId, offerId);
+        return new ResponseEntity<>("Offer deleted successfully", HttpStatus.OK);
+    }
 }

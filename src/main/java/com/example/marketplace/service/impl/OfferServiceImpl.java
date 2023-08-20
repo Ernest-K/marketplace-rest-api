@@ -30,7 +30,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -43,10 +42,10 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @Transactional(readOnly = true)
-    public OfferResponse getOfferById(Long id) {
-        return offerRepository.findById(id)
+    public OfferResponse getOfferById(Long offerId) {
+        return offerRepository.findById(offerId)
                 .map(offerMapper)
-                .orElseThrow(() -> new OfferNotFoundException("No offer with id: " + id));
+                .orElseThrow(() -> new OfferNotFoundException("No offer with id: " + offerId));
     }
 
     @Override
@@ -90,14 +89,12 @@ public class OfferServiceImpl implements OfferService {
     @Override
     @Transactional
     public OfferResponse createOffer(Long userId, OfferRequest offerRequest) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("No user with id: " + userId));
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
-
-        if (!user.getId().equals(authenticatedSecurityUser.getId())){
+        if(!hasUserAccess(userId)){
             throw new AccessDeniedException("Not allowed to create offer");
         }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("No user with id: " + userId));
 
         Category category = categoryRepository.findById(offerRequest.getCategoryId())
                 .orElseThrow(() -> new CategoryNotFoundException("No category with id: " + offerRequest.getCategoryId()));
@@ -113,18 +110,14 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
+    @Transactional
     public OfferResponse updateOffer(Long userId, Long offerId, OfferRequest offerRequest) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("No user with id: " + userId));
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
-
-        if (!user.getId().equals(authenticatedSecurityUser.getId())){
-            throw new AccessDeniedException("Not allowed to update offer");
-        }
-
         Offer offerToUpdate = offerRepository.findById(offerId)
                 .orElseThrow(() -> new OfferNotFoundException("No offer with id: " + offerId));
+
+        if(!hasUserAccess(userId) || !userId.equals(offerToUpdate.getUser().getId())){
+            throw new AccessDeniedException("Not allowed to update offer");
+        }
 
         Map<String, Object> dtoMap = convertDtoToMap(offerRequest);
 
@@ -143,6 +136,19 @@ public class OfferServiceImpl implements OfferService {
         }
 
         return mapToDto(offerRepository.save(offerToUpdate));
+    }
+
+    @Override
+    @Transactional
+    public void deleteOffer(Long userId, Long offerId) {
+        Offer offerToDelete = offerRepository.findById(offerId)
+                .orElseThrow(() -> new OfferNotFoundException("No offer with id: " + offerId));
+
+        if(!hasUserAccess(userId) || !userId.equals(offerToDelete.getUser().getId())){
+            throw new AccessDeniedException("Not allowed to delete offer");
+        }
+
+        offerRepository.delete(offerToDelete);
     }
 
     private OfferPageResponse buildOfferPageResponse(Page<Offer> offerPage){
@@ -194,5 +200,12 @@ public class OfferServiceImpl implements OfferService {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean hasUserAccess(Long userId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
+
+        return userId.equals(authenticatedSecurityUser.getId());
     }
 }

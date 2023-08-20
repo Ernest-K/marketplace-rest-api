@@ -8,7 +8,7 @@ import com.example.marketplace.dto.response.OfferResponse;
 import java.util.List;
 
 public interface OfferService {
-    OfferResponse getOfferById(Long id);
+    OfferResponse getOfferById(Long offerId);
 
     OfferPageResponse getOffers(Integer pageNo, Integer pageSize);
 
@@ -21,4 +21,6 @@ public interface OfferService {
     OfferResponse createOffer(Long userId, OfferRequest offerRequest);
 
     OfferResponse updateOffer(Long userId, Long offerId, OfferRequest offerRequest);
+
+    void deleteOffer(Long userId, Long offerId);
 }
