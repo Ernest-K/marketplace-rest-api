@@ -35,27 +35,27 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> getUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(userMapper)
+                .map(userMapper::mapToDto)
                 .collect(Collectors.toList());
     }
     @Override
     @Transactional(readOnly = true)
-    public UserResponse getUserById(Long id) {
-        return userRepository.findById(id)
-                .map(userMapper)
-                .orElseThrow(()-> new UserNotFoundException(id.toString()));
+    public UserResponse getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .map(userMapper::mapToDto)
+                .orElseThrow(()-> new UserNotFoundException(userId.toString()));
     }
 
     @Override
     @Transactional
-    public UserResponse updateUser(Long id, UpdateUserRequest updateUserRequest) {
-        User userToUpdate = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("No user with id: " + id));
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
+    public UserResponse updateUser(Long userId, UpdateUserRequest updateUserRequest) {
 
-        if (!userToUpdate.getId().equals(authenticatedSecurityUser.getId())){
-            throw new AccessDeniedException("Not allowed to update");
+        if(!hasUserAccess(userId)){
+            throw new AccessDeniedException("Not allowed to update user");
         }
+
+        User userToUpdate = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("No user with id: " + userId));
 
         Map<String, Object> dtoMap = convertDtoToMap(updateUserRequest);
 
@@ -71,25 +71,20 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        return mapToDto(userRepository.save(userToUpdate));
+        return userMapper.mapToDto(userRepository.save(userToUpdate));
     }
 
     @Override
     @Transactional
-    public void deleteUser(Long id) {
-        User userToDelete = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("No user with id: " + id));
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
-
-        if (!userToDelete.getId().equals(authenticatedSecurityUser.getId())){
+    public void deleteUser(Long userId) {
+        if (!hasUserAccess(userId)){
             throw new AccessDeniedException("Not allowed to delete");
         }
 
-        userRepository.delete(userToDelete);
-    }
+        User userToDelete = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("No user with id: " + userId));
 
-    private UserResponse mapToDto(User user){
-        return new UserResponse(user.getId(), user.getUsername(), user.getEmail());
+        userRepository.delete(userToDelete);
     }
 
     private Map<String, Object> convertDtoToMap(UpdateUserRequest updateUserRequest){
@@ -118,5 +113,12 @@ public class UserServiceImpl implements UserService {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean hasUserAccess(Long userId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
+
+        return userId.equals(authenticatedSecurityUser.getId());
     }
 }

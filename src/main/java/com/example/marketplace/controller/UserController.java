@@ -27,11 +27,7 @@ public class UserController {
     }
     @GetMapping("/users/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id){
-        UserResponse userResponse = userService.getUserById(id);
-        if(userResponse == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(userResponse, HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('USER')")
@@ -41,9 +37,9 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('USER')")
-    @DeleteMapping("/users/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id){
-        userService.deleteUser(id);
-        return new ResponseEntity<>("User id: " + id + " deleted successfully", HttpStatus.OK);
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId){
+        userService.deleteUser(userId);
+        return new ResponseEntity<>("User id: " + userId + " deleted successfully", HttpStatus.OK);
     }
 }

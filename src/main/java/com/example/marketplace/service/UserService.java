@@ -8,9 +8,9 @@ import java.util.List;
 public interface UserService {
     List<UserResponse> getUsers();
 
-    UserResponse getUserById(Long id);
+    UserResponse getUserById(Long userId);
 
-    UserResponse updateUser(Long id, UpdateUserRequest updateUserRequest);
+    UserResponse updateUser(Long userId, UpdateUserRequest updateUserRequest);
 
-    void deleteUser(Long id);
+    void deleteUser(Long userId);
 }
