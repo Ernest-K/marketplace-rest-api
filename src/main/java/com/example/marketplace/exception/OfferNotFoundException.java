@@ -1,6 +1,8 @@
 package com.example.marketplace.exception;
 
-public class OfferNotFoundException extends RuntimeException{
+import jakarta.persistence.EntityNotFoundException;
+
+public class OfferNotFoundException extends EntityNotFoundException {
     public OfferNotFoundException(String message) {
         super(message);
     }

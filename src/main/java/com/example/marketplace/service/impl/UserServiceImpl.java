@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse getUserById(Long userId) {
         return userRepository.findById(userId)
                 .map(userMapper::mapToDto)
-                .orElseThrow(()-> new UserNotFoundException(userId.toString()));
+                .orElseThrow(()-> new UserNotFoundException("No user with id: " + userId));
     }
 
     @Override

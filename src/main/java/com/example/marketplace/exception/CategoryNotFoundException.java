@@ -1,6 +1,8 @@
 package com.example.marketplace.exception;
 
-public class CategoryNotFoundException extends RuntimeException{
+import jakarta.persistence.EntityNotFoundException;
+
+public class CategoryNotFoundException extends EntityNotFoundException {
     public CategoryNotFoundException(String message) {
         super(message);
     }

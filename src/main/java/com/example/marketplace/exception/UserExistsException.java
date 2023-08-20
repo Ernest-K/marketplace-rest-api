@@ -1,6 +1,8 @@
 package com.example.marketplace.exception;
 
-public class UserExistsException extends RuntimeException{
+import jakarta.persistence.EntityExistsException;
+
+public class UserExistsException extends EntityExistsException {
     public UserExistsException(String message){
         super(message);
     }
