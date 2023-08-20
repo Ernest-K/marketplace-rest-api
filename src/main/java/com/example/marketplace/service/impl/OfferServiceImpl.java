@@ -44,7 +44,7 @@ public class OfferServiceImpl implements OfferService {
     @Transactional(readOnly = true)
     public OfferResponse getOfferById(Long offerId) {
         return offerRepository.findById(offerId)
-                .map(offerMapper)
+                .map(offerMapper::mapToDto)
                 .orElseThrow(() -> new OfferNotFoundException("No offer with id: " + offerId));
     }
 
@@ -106,7 +106,7 @@ public class OfferServiceImpl implements OfferService {
         offer.setUser(user);
         offer.setCategory(category);
 
-        return mapToDto(offerRepository.save(offer));
+        return offerMapper.mapToDto(offerRepository.save(offer));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class OfferServiceImpl implements OfferService {
             }
         }
 
-        return mapToDto(offerRepository.save(offerToUpdate));
+        return offerMapper.mapToDto(offerRepository.save(offerToUpdate));
     }
 
     @Override
@@ -152,7 +152,7 @@ public class OfferServiceImpl implements OfferService {
     }
 
     private OfferPageResponse buildOfferPageResponse(Page<Offer> offerPage){
-        List<OfferResponse> offerResponses = offerPage.getContent().stream().map(offerMapper).toList();
+        List<OfferResponse> offerResponses = offerPage.getContent().stream().map(offerMapper::mapToDto).toList();
 
         OfferPageResponse offerPageResponse = new OfferPageResponse();
         offerPageResponse.setOfferResponses(offerResponses);
@@ -163,15 +163,6 @@ public class OfferServiceImpl implements OfferService {
         offerPageResponse.setLast(offerPage.isLast());
 
         return offerPageResponse;
-    }
-
-    private OfferResponse mapToDto(Offer offer){
-        return new OfferResponse(offer.getId(),
-                offer.getName(),
-                offer.getDescription(),
-                offer.getPrice(),
-                offer.getUser().getId(),
-                offer.getCategory());
     }
 
     private Map<String, Object> convertDtoToMap(OfferRequest offerRequest){

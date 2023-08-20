@@ -4,13 +4,10 @@ import com.example.marketplace.dto.response.OfferResponse;
 import com.example.marketplace.model.Offer;
 import org.springframework.stereotype.Component;
 
-import java.util.function.Function;
-
 @Component
-public class OfferMapper implements Function<Offer, OfferResponse> {
+public class OfferMapper {
 
-    @Override
-    public OfferResponse apply(Offer offer) {
+    public OfferResponse mapToDto(Offer offer){
         return new OfferResponse(offer.getId(),
                 offer.getName(),
                 offer.getDescription(),
