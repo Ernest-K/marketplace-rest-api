@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
+import java.security.InvalidParameterException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +54,14 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @Transactional(readOnly = true)
-    public OfferPageResponse getOffers(Integer pageNo, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+    public OfferPageResponse getOffers(Integer pageNo, Integer pageSize, String sortBy, String direction) {
+
+        if(!areSortParametersValid(sortBy, direction)){
+            throw new InvalidParameterException("Sorting parameter not valid");
+        }
+
+        Order order = new Order(Sort.Direction.fromString(direction), sortBy);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(order));
         Page<Offer> offerPage = offerRepository.findAll(pageable);
 
         return buildOfferPageResponse(offerPage);
@@ -59,11 +69,17 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @Transactional(readOnly = true)
-    public OfferPageResponse getOffersByCategoryName(String categoryName, Integer pageNo, Integer pageSize) {
+    public OfferPageResponse getOffersByCategoryName(String categoryName, Integer pageNo, Integer pageSize, String sortBy, String direction) {
         Category category = categoryRepository.findByNameIgnoreCase(categoryName)
                 .orElseThrow(() -> new CategoryNotFoundException("No category with name: "+ categoryName));
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        if(!areSortParametersValid(sortBy, direction)){
+            throw new InvalidParameterException("Sorting parameter not valid");
+        }
+
+        Order order = new Order(Sort.Direction.fromString(direction), sortBy);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(order));
+
         Page<Offer> offerPage = offerRepository.findAllByCategoryId(category.getId(), pageable);
 
         return buildOfferPageResponse(offerPage);
@@ -71,11 +87,17 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @Transactional(readOnly = true)
-    public OfferPageResponse getOffersByUserId(Long userId, Integer pageNo, Integer pageSize) {
+    public OfferPageResponse getOffersByUserId(Long userId, Integer pageNo, Integer pageSize, String sortBy, String direction) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("No user with id: " + userId));
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        if(!areSortParametersValid(sortBy, direction)){
+            throw new InvalidParameterException("Sorting parameter not valid");
+        }
+
+        Order order = new Order(Sort.Direction.fromString(direction), sortBy);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(order));
+
         Page<Offer> offerPage = offerRepository.findAllByUserId(user.getId(), pageable);
 
         return buildOfferPageResponse(offerPage);
@@ -198,5 +220,14 @@ public class OfferServiceImpl implements OfferService {
         SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
 
         return userId.equals(authenticatedSecurityUser.getId());
+    }
+
+    private boolean areSortParametersValid(String sortBy, String direction){
+        Field[] declaredFields = OfferResponse.class.getDeclaredFields();
+        List<String> declaredFieldsName = Arrays.stream(declaredFields).map(Field::getName).toList();
+
+        List<String> directionsName = Arrays.stream(Sort.Direction.values()).map(Enum::toString).toList();
+
+        return declaredFieldsName.contains(sortBy) && directionsName.contains(direction.toUpperCase());
     }
 }

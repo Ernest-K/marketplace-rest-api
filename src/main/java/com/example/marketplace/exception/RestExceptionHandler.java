@@ -15,6 +15,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.security.InvalidParameterException;
+
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler
 {
@@ -66,6 +68,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
         apiError.setMessage(String.format("Could not find the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL()));
         apiError.setDebugMessage(ex.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(InvalidParameterException.class)
+    protected ResponseEntity<Object> handleInvalidParameterException(
+            InvalidParameterException ex, WebRequest webRequest) {
+
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setMessage(ex.getMessage());
 
         return buildResponseEntity(apiError);
     }

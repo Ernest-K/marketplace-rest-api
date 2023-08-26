@@ -22,8 +22,11 @@ public class OfferController {
     private final OfferService offerService;
 
     @GetMapping("/offers")
-    public ResponseEntity<OfferPageResponse> getAllOffers(@RequestParam(defaultValue = "0", required = false) Integer pageNo, @RequestParam(defaultValue = "10", required = false) Integer pageSize){
-        return new ResponseEntity<>(offerService.getOffers(pageNo, pageSize), HttpStatus.OK);
+    public ResponseEntity<OfferPageResponse> getAllOffers(@RequestParam(defaultValue = "0", required = false) Integer pageNo,
+                                                          @RequestParam(defaultValue = "10", required = false) Integer pageSize,
+                                                          @RequestParam(defaultValue = "id", required = false) String sortBy,
+                                                          @RequestParam(defaultValue = "asc", required = false) String direction){
+        return new ResponseEntity<>(offerService.getOffers(pageNo, pageSize, sortBy, direction), HttpStatus.OK);
     }
 
     @GetMapping("/offers/{id}")
@@ -32,13 +35,21 @@ public class OfferController {
     }
 
     @GetMapping("/users/{userId}/offers")
-    public ResponseEntity<OfferPageResponse> getOffersByUserId(@PathVariable Long userId, @RequestParam(defaultValue = "0", required = false) Integer pageNo, @RequestParam(defaultValue = "10", required = false) Integer pageSize){
-        return new ResponseEntity<>(offerService.getOffersByUserId(userId, pageNo, pageSize), HttpStatus.OK);
+    public ResponseEntity<OfferPageResponse> getOffersByUserId(@PathVariable Long userId,
+                                                               @RequestParam(defaultValue = "0", required = false) Integer pageNo,
+                                                               @RequestParam(defaultValue = "10", required = false) Integer pageSize,
+                                                               @RequestParam(defaultValue = "id", required = false) String sortBy,
+                                                               @RequestParam(defaultValue = "asc", required = false) String direction){
+        return new ResponseEntity<>(offerService.getOffersByUserId(userId, pageNo, pageSize, sortBy, direction), HttpStatus.OK);
     }
 
     @GetMapping(value = "/offers", params = "categoryName")
-    public ResponseEntity<OfferPageResponse> getOffersByCategoryName(@RequestParam String categoryName, @RequestParam(defaultValue = "0", required = false) Integer pageNo, @RequestParam(defaultValue = "10", required = false) Integer pageSize){
-        return new ResponseEntity<>(offerService.getOffersByCategoryName(categoryName, pageNo, pageSize), HttpStatus.OK);
+    public ResponseEntity<OfferPageResponse> getOffersByCategoryName(@RequestParam String categoryName,
+                                                                     @RequestParam(defaultValue = "0", required = false) Integer pageNo,
+                                                                     @RequestParam(defaultValue = "10", required = false) Integer pageSize,
+                                                                     @RequestParam(defaultValue = "id", required = false) String sortBy,
+                                                                     @RequestParam(defaultValue = "asc", required = false) String direction){
+        return new ResponseEntity<>(offerService.getOffersByCategoryName(categoryName, pageNo, pageSize, sortBy, direction), HttpStatus.OK);
     }
 
     @GetMapping("/offers/count")
@@ -48,13 +59,16 @@ public class OfferController {
 
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/users/{userId}/offers")
-    public ResponseEntity<OfferResponse> createOffer(@PathVariable Long userId, @RequestBody @Valid OfferRequest offerRequest){
+    public ResponseEntity<OfferResponse> createOffer(@PathVariable Long userId,
+                                                     @RequestBody @Valid OfferRequest offerRequest){
         return new ResponseEntity<>(offerService.createOffer(userId, offerRequest), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAnyRole('USER')")
     @PutMapping("/users/{userId}/offers/{offerId}")
-    public ResponseEntity<OfferResponse> updateOffer(@PathVariable Long userId, @PathVariable Long offerId, @RequestBody @Valid OfferRequest offerRequest){
+    public ResponseEntity<OfferResponse> updateOffer(@PathVariable Long userId,
+                                                     @PathVariable Long offerId,
+                                                     @RequestBody @Valid OfferRequest offerRequest){
         return new ResponseEntity<>(offerService.updateOffer(userId, offerId, offerRequest), HttpStatus.OK);
     }
 

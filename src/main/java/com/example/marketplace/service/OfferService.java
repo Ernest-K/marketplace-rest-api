@@ -10,11 +10,11 @@ import java.util.List;
 public interface OfferService {
     OfferResponse getOfferById(Long offerId);
 
-    OfferPageResponse getOffers(Integer pageNo, Integer pageSize);
+    OfferPageResponse getOffers(Integer pageNo, Integer pageSize, String sortBy, String direction);
 
-    OfferPageResponse getOffersByCategoryName(String categoryName, Integer pageNo, Integer pageSize);
+    OfferPageResponse getOffersByCategoryName(String categoryName, Integer pageNo, Integer pageSize, String sortBy, String direction);
 
-    OfferPageResponse getOffersByUserId(Long userId, Integer pageNo, Integer pageSize);
+    OfferPageResponse getOffersByUserId(Long userId, Integer pageNo, Integer pageSize, String sortBy, String direction);
 
     List<OfferCount> getCountOffersByCategory();
 
