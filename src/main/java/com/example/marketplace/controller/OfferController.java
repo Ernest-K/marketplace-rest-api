@@ -78,4 +78,13 @@ public class OfferController {
         offerService.deleteOffer(userId, offerId);
         return new ResponseEntity<>("Offer deleted successfully", HttpStatus.OK);
     }
+
+    @GetMapping(value = "/offers", params = "query")
+    public ResponseEntity<OfferPageResponse> searchOffers(@RequestParam String query,
+                                                          @RequestParam(defaultValue = "0", required = false) Integer pageNo,
+                                                          @RequestParam(defaultValue = "10", required = false) Integer pageSize,
+                                                          @RequestParam(defaultValue = "id", required = false) String sortBy,
+                                                          @RequestParam(defaultValue = "asc", required = false) String direction){
+        return new ResponseEntity<>(offerService.searchOffers(query, pageNo, pageSize, sortBy, direction), HttpStatus.OK);
+    }
 }

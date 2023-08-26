@@ -23,4 +23,6 @@ public interface OfferService {
     OfferResponse updateOffer(Long userId, Long offerId, OfferRequest offerRequest);
 
     void deleteOffer(Long userId, Long offerId);
+
+    OfferPageResponse searchOffers(String query, Integer pageNo, Integer pageSize, String sortBy, String direction);
 }

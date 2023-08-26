@@ -55,7 +55,6 @@ public class OfferServiceImpl implements OfferService {
     @Override
     @Transactional(readOnly = true)
     public OfferPageResponse getOffers(Integer pageNo, Integer pageSize, String sortBy, String direction) {
-
         if(!areSortParametersValid(sortBy, direction)){
             throw new InvalidParameterException("Sorting parameter not valid");
         }
@@ -171,6 +170,21 @@ public class OfferServiceImpl implements OfferService {
         }
 
         offerRepository.delete(offerToDelete);
+    }
+
+    @Override
+    @Transactional
+    public OfferPageResponse searchOffers(String query, Integer pageNo, Integer pageSize, String sortBy, String direction){
+        if(!areSortParametersValid(sortBy, direction)){
+            throw new InvalidParameterException("Sorting parameter not valid");
+        }
+
+        Order order = new Order(Sort.Direction.fromString(direction), sortBy);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(order));
+
+        Page<Offer> offerPage = offerRepository.searchOffers(query, pageable);
+
+        return buildOfferPageResponse(offerPage);
     }
 
     private OfferPageResponse buildOfferPageResponse(Page<Offer> offerPage){
