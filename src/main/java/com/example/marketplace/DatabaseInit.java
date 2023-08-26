@@ -1,9 +1,6 @@
 package com.example.marketplace;
 
-import com.example.marketplace.model.Category;
-import com.example.marketplace.model.Offer;
-import com.example.marketplace.model.Role;
-import com.example.marketplace.model.User;
+import com.example.marketplace.model.*;
 import com.example.marketplace.repository.CategoryRepository;
 import com.example.marketplace.repository.OfferRepository;
 import com.example.marketplace.repository.RoleRepository;
@@ -29,8 +26,8 @@ public class DatabaseInit {
     @PostConstruct
     private void init(){
 
-        Role adminRole = roleRepository.save(new Role("ROLE_ADMIN"));
-        Role userRole = roleRepository.save(new Role("ROLE_USER"));
+        Role adminRole = roleRepository.save(new Role(RoleName.ROLE_ADMIN));
+        Role userRole = roleRepository.save(new Role(RoleName.ROLE_USER));
 
         User admin = new User("admin", passwordEncoder.encode("admin"), "admin@gmail.com");
         admin.setRoles(Collections.singletonList(adminRole));
