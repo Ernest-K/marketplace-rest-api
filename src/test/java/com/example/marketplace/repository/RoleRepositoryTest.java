@@ -1,6 +1,5 @@
 package com.example.marketplace.repository;
 
-import com.example.marketplace.model.Category;
 import com.example.marketplace.model.Role;
 import com.example.marketplace.model.RoleName;
 import org.junit.jupiter.api.Test;
