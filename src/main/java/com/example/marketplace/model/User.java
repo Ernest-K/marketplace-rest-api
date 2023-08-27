@@ -9,6 +9,8 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @DynamicUpdate
 @Table(name = "users")
