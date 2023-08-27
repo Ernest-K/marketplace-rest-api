@@ -17,6 +17,17 @@ public class UserRepositoryTest {
     private UserRepository userRepository;
 
     @Test
+    public void Save_ValidUser_ReturnSavedUser() {
+        User user = User.builder().username("testUser").email("test@example.com").build();
+
+        User savedUser = userRepository.save(user);
+
+        assertThat(savedUser.getId()).isNotNull();
+        assertThat(savedUser.getUsername()).isEqualTo("testUser");
+        assertThat(savedUser.getEmail()).isEqualTo("test@example.com");
+    }
+
+    @Test
     public void FindAll_ReturnUserList(){
         User user1 = User.builder().username("testUser1").email("test1@example.com").build();
         User user2 = User.builder().username("testUser2").email("test2@example.com").build();
@@ -30,22 +41,11 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void Save_ValidUser_ReturnSavedUser() {
-        User user = User.builder().username("testUser").email("test@example.com").build();
-
-        User savedUser = userRepository.save(user);
-
-        assertThat(savedUser.getId()).isNotNull();
-        assertThat(savedUser.getUsername()).isEqualTo("testUser");
-        assertThat(savedUser.getEmail()).isEqualTo("test@example.com");
-    }
-
-    @Test
     public void FindById_ValidId_ReturnUser() {
         User user = User.builder().username("testUser").email("test@example.com").build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        Optional<User> foundUser = userRepository.findById(user.getId());
+        Optional<User> foundUser = userRepository.findById(savedUser.getId());
 
         assertThat(foundUser).isPresent();
         assertThat(foundUser.get()).isEqualTo(user);
@@ -71,7 +71,10 @@ public class UserRepositoryTest {
 
     @Test
     public void FindByUsername_InvalidUsername_ReturnEmpty() {
-        Optional<User> foundUser = userRepository.findByUsername("testUser");
+        User user = User.builder().username("testUser").email("test@example.com").build();
+        userRepository.save(user);
+
+        Optional<User> foundUser = userRepository.findByUsername("userTest");
 
         assertThat(foundUser).isEmpty();
     }
@@ -88,7 +91,10 @@ public class UserRepositoryTest {
 
     @Test
     public void ExistsByUsername_InvalidUsername_ReturnFalse() {
-        Boolean exists = userRepository.existsByUsername("testUser");
+        User user = User.builder().username("testUser").email("test@example.com").build();
+        userRepository.save(user);
+
+        Boolean exists = userRepository.existsByUsername("userTest");
 
         assertThat(exists).isFalse();
     }
@@ -105,7 +111,10 @@ public class UserRepositoryTest {
 
     @Test
     public void ExistsByEmail_InvalidEmail_ReturnTrue() {
-        Boolean exists = userRepository.existsByEmail("test@example.com");
+        User user = User.builder().username("testUser").email("test@example.com").build();
+        userRepository.save(user);
+
+        Boolean exists = userRepository.existsByEmail("example@test.com");
 
         assertThat(exists).isFalse();
     }
@@ -113,16 +122,16 @@ public class UserRepositoryTest {
     @Test
     public void UpdateUser_ReturnUpdatedUser(){
         User user = User.builder().username("testUser").email("test@example.com").build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        User userToUpdate = userRepository.findById(user.getId()).get();
+        User userToUpdate = userRepository.findById(savedUser.getId()).get();
 
         userToUpdate.setUsername("updateUser");
         userToUpdate.setEmail("update@example.com");
 
         User updatedUser =  userRepository.save(userToUpdate);
 
-        assertThat(updatedUser.getId()).isEqualTo(user.getId());
+        assertThat(updatedUser.getId()).isEqualTo(savedUser.getId());
         assertThat(updatedUser.getUsername()).isEqualTo("updateUser");
         assertThat(updatedUser.getEmail()).isEqualTo("update@example.com");
     }

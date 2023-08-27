@@ -1,5 +1,6 @@
 package com.example.marketplace.repository;
 
+import com.example.marketplace.model.Category;
 import com.example.marketplace.model.Role;
 import com.example.marketplace.model.RoleName;
 import org.junit.jupiter.api.Test;
@@ -30,8 +31,6 @@ public class RoleRepositoryTest {
 
     @Test
     public void FindAll_ReturnRoleList(){
-        System.out.println(RoleName.values());
-
         Arrays.stream(RoleName.values())
                 .map(roleName -> roleRepository.save(Role.builder().name(roleName).build()))
                 .forEach(savedRole -> {});
@@ -39,6 +38,24 @@ public class RoleRepositoryTest {
         List<Role> roleList = roleRepository.findAll();
 
         assertThat(roleList).hasSize(RoleName.values().length);
+    }
+
+    @Test
+    public void FindById_ValidId_ReturnRole() {
+        Role role = Role.builder().name(RoleName.ROLE_USER).build();
+        Role savedRole = roleRepository.save(role);
+
+        Optional<Role> foundRole = roleRepository.findById(savedRole.getId());
+
+        assertThat(foundRole).isPresent();
+        assertThat(foundRole.get()).isEqualTo(role);
+    }
+
+    @Test
+    public void FindById_InvalidId_ReturnEmpty() {
+        Optional<Role> foundRole = roleRepository.findById(1L);
+
+        assertThat(foundRole).isEmpty();
     }
 
     @Test
