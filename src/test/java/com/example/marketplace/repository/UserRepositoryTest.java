@@ -33,11 +33,11 @@ public class UserRepositoryTest {
     public void Save_ValidUser_ReturnSavedUser() {
         User user = User.builder().username("testUser").email("test@example.com").build();
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        assertThat(user.getId()).isNotNull();
-        assertThat(user.getUsername()).isEqualTo("testUser");
-        assertThat(user.getEmail()).isEqualTo("test@example.com");
+        assertThat(savedUser.getId()).isNotNull();
+        assertThat(savedUser.getUsername()).isEqualTo("testUser");
+        assertThat(savedUser.getEmail()).isEqualTo("test@example.com");
     }
 
     @Test
@@ -130,11 +130,11 @@ public class UserRepositoryTest {
     @Test
     public void DeleteById_ValidId_ReturnEmpty(){
         User user = User.builder().username("testUser").email("test@example.com").build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        userRepository.deleteById(user.getId());
+        userRepository.deleteById(savedUser.getId());
 
-        Optional<User> deletedUser = userRepository.findById(user.getId());
+        Optional<User> deletedUser = userRepository.findById(savedUser.getId());
 
         assertThat(deletedUser).isEmpty();
     }

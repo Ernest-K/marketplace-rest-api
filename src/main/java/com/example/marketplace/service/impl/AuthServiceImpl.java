@@ -3,6 +3,7 @@ package com.example.marketplace.service.impl;
 import com.example.marketplace.dto.request.RegisterRequest;
 import com.example.marketplace.exception.UserExistsException;
 import com.example.marketplace.model.Role;
+import com.example.marketplace.model.RoleName;
 import com.example.marketplace.model.User;
 import com.example.marketplace.repository.RoleRepository;
 import com.example.marketplace.repository.UserRepository;
@@ -37,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(registerRequest.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 
-        Role userRole = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new RuntimeException("Role not found"));
+        Role userRole = roleRepository.findByName(RoleName.ROLE_USER).orElseThrow(() -> new RuntimeException("Role not found"));
         user.setRoles(Collections.singletonList(userRole));
 
         userRepository.save(user);
