@@ -1,14 +1,21 @@
 package com.example.marketplace.service.impl;
 
+import com.example.marketplace.dto.request.LoginRequest;
 import com.example.marketplace.dto.request.RegisterRequest;
+import com.example.marketplace.dto.response.TokenResponse;
 import com.example.marketplace.exception.UserExistsException;
 import com.example.marketplace.model.Role;
 import com.example.marketplace.model.RoleName;
 import com.example.marketplace.model.User;
 import com.example.marketplace.repository.RoleRepository;
 import com.example.marketplace.repository.UserRepository;
+import com.example.marketplace.security.JwtUtils;
 import com.example.marketplace.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +29,24 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
+
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
+    public TokenResponse login(LoginRequest loginRequest){
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtUtils.generateToken(authentication);
+
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setToken(token);
+
+        return tokenResponse;
+    }
+
+    @Override
+    @Transactional
     public void register(RegisterRequest registerRequest) {
 
         if (userRepository.existsByUsername(registerRequest.getUsername())){
