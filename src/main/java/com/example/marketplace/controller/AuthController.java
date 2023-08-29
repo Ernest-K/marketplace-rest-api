@@ -1,6 +1,8 @@
 package com.example.marketplace.controller;
 
+import com.example.marketplace.dto.request.LoginRequest;
 import com.example.marketplace.dto.request.RegisterRequest;
+import com.example.marketplace.dto.response.TokenResponse;
 import com.example.marketplace.service.impl.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthServiceImpl authService;
+
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest loginRequest){
+        return new ResponseEntity<>(authService.login(loginRequest), HttpStatus.OK);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid RegisterRequest registerRequest){
         authService.register(registerRequest);

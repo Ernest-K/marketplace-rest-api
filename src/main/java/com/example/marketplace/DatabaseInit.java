@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class DatabaseInit {
         Role userRole = roleRepository.save(new Role(RoleName.ROLE_USER));
 
         User admin = new User("admin", passwordEncoder.encode("admin"), "admin@gmail.com");
-        admin.setRoles(Collections.singletonList(adminRole));
+        admin.setRoles(List.of(adminRole, userRole));
 
         User user = new User("John", passwordEncoder.encode("John123"), "John@gmail.com");
         user.setRoles(Collections.singletonList(userRole));

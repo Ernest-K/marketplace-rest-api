@@ -6,12 +6,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
+
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+
 
 import java.security.Key;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -31,11 +34,9 @@ public class JwtUtils {
                 .setSubject(username)
                 .setIssuedAt(currentDate)
                 .setExpiration(expireDate)
+                .claim("roles", authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(" ")))
                 .signWith(key)
                 .compact();
-
-        log.info(String.valueOf(key));
-        log.info(token);
 
         return token;
     }
@@ -58,8 +59,8 @@ public class JwtUtils {
                     .parseClaimsJws(token);
             return true;
         } catch (Exception ex) {
-            throw new AuthenticationCredentialsNotFoundException("JWT was exprired or incorrect", ex.fillInStackTrace());
+            log.error("JWT was expired or incorrect");
+            return false;
         }
     }
-
 }
