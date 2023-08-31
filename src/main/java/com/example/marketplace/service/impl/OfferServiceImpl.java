@@ -1,6 +1,7 @@
 package com.example.marketplace.service.impl;
 
-import com.example.marketplace.dto.request.OfferRequest;
+import com.example.marketplace.dto.request.CreateOfferRequest;
+import com.example.marketplace.dto.request.UpdateOfferRequest;
 import com.example.marketplace.dto.response.OfferCount;
 import com.example.marketplace.dto.response.OfferPageResponse;
 import com.example.marketplace.dto.response.OfferResponse;
@@ -8,10 +9,7 @@ import com.example.marketplace.exception.CategoryNotFoundException;
 import com.example.marketplace.exception.OfferNotFoundException;
 import com.example.marketplace.exception.UserNotFoundException;
 import com.example.marketplace.mapper.OfferMapper;
-import com.example.marketplace.model.Category;
-import com.example.marketplace.model.Offer;
-import com.example.marketplace.model.SecurityUser;
-import com.example.marketplace.model.User;
+import com.example.marketplace.model.*;
 import com.example.marketplace.repository.CategoryRepository;
 import com.example.marketplace.repository.OfferRepository;
 import com.example.marketplace.repository.UserRepository;
@@ -24,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,7 +108,7 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @Transactional
-    public OfferResponse createOffer(Long userId, OfferRequest offerRequest) {
+    public OfferResponse createOffer(Long userId, CreateOfferRequest createOfferRequest) {
         if(!hasUserAccess(userId)){
             throw new AccessDeniedException("Not allowed to create offer");
         }
@@ -117,13 +116,13 @@ public class OfferServiceImpl implements OfferService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("No user with id: " + userId));
 
-        Category category = categoryRepository.findById(offerRequest.getCategoryId())
-                .orElseThrow(() -> new CategoryNotFoundException("No category with id: " + offerRequest.getCategoryId()));
+        Category category = categoryRepository.findById(createOfferRequest.getCategoryId())
+                .orElseThrow(() -> new CategoryNotFoundException("No category with id: " + createOfferRequest.getCategoryId()));
 
         Offer offer = new Offer();
-        offer.setName(offerRequest.getName());
-        offer.setDescription(offerRequest.getDescription());
-        offer.setPrice(offerRequest.getPrice());
+        offer.setName(createOfferRequest.getName());
+        offer.setDescription(createOfferRequest.getDescription());
+        offer.setPrice(createOfferRequest.getPrice());
         offer.setUser(user);
         offer.setCategory(category);
 
@@ -132,7 +131,7 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @Transactional
-    public OfferResponse updateOffer(Long userId, Long offerId, OfferRequest offerRequest) {
+    public OfferResponse updateOffer(Long userId, Long offerId, UpdateOfferRequest updateOfferRequest) {
         Offer offerToUpdate = offerRepository.findById(offerId)
                 .orElseThrow(() -> new OfferNotFoundException("No offer with id: " + offerId));
 
@@ -140,7 +139,7 @@ public class OfferServiceImpl implements OfferService {
             throw new AccessDeniedException("Not allowed to update offer");
         }
 
-        Map<String, Object> dtoMap = convertDtoToMap(offerRequest);
+        Map<String, Object> dtoMap = convertDtoToMap(updateOfferRequest);
 
         for (Map.Entry<String, Object> entry : dtoMap.entrySet()) {
             String fieldName = entry.getKey();
@@ -201,7 +200,7 @@ public class OfferServiceImpl implements OfferService {
         return offerPageResponse;
     }
 
-    private Map<String, Object> convertDtoToMap(OfferRequest offerRequest){
+    private <T> Map<String, Object> convertDtoToMap(T offerRequest){
         Map<String, Object> dtoMap = new HashMap<>();
 
         Field[] fields = offerRequest.getClass().getDeclaredFields();
@@ -233,7 +232,7 @@ public class OfferServiceImpl implements OfferService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
 
-        return userId.equals(authenticatedSecurityUser.getId());
+        return userId.equals(authenticatedSecurityUser.getId()) || authenticatedSecurityUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.name()));
     }
 
     private boolean areSortParametersValid(String sortBy, String direction){

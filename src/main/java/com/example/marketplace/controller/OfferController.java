@@ -1,8 +1,9 @@
 package com.example.marketplace.controller;
 
+import com.example.marketplace.dto.request.UpdateOfferRequest;
 import com.example.marketplace.dto.response.OfferCount;
 import com.example.marketplace.dto.response.OfferPageResponse;
-import com.example.marketplace.dto.request.OfferRequest;
+import com.example.marketplace.dto.request.CreateOfferRequest;
 import com.example.marketplace.dto.response.OfferResponse;
 import com.example.marketplace.service.OfferService;
 import jakarta.validation.Valid;
@@ -60,16 +61,16 @@ public class OfferController {
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/users/{userId}/offers")
     public ResponseEntity<OfferResponse> createOffer(@PathVariable Long userId,
-                                                     @RequestBody @Valid OfferRequest offerRequest){
-        return new ResponseEntity<>(offerService.createOffer(userId, offerRequest), HttpStatus.CREATED);
+                                                     @RequestBody @Valid CreateOfferRequest createOfferRequest){
+        return new ResponseEntity<>(offerService.createOffer(userId, createOfferRequest), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAnyRole('USER')")
     @PutMapping("/users/{userId}/offers/{offerId}")
     public ResponseEntity<OfferResponse> updateOffer(@PathVariable Long userId,
                                                      @PathVariable Long offerId,
-                                                     @RequestBody @Valid OfferRequest offerRequest){
-        return new ResponseEntity<>(offerService.updateOffer(userId, offerId, offerRequest), HttpStatus.OK);
+                                                     @RequestBody @Valid UpdateOfferRequest updateOfferRequest){
+        return new ResponseEntity<>(offerService.updateOffer(userId, offerId, updateOfferRequest), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('USER')")

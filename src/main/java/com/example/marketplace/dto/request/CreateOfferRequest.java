@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OfferRequest {
+public class CreateOfferRequest {
     @Size(max = 30, message = "Offer name is too long (max 30 characters)")
     @NotBlank(message = "Offer name is required")
     private String name;
