@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 
 @RequiredArgsConstructor
@@ -31,25 +31,25 @@ public class DatabaseInit {
         Role userRole = roleRepository.save(new Role(RoleName.ROLE_USER));
 
         User admin = new User("admin", passwordEncoder.encode("admin"), "admin@gmail.com");
-        admin.setRoles(List.of(adminRole, userRole));
+        admin.setRoles(Set.of(adminRole, userRole));
 
         User user = new User("John", passwordEncoder.encode("John123"), "John@gmail.com");
-        user.setRoles(Collections.singletonList(userRole));
+        user.setRoles(Collections.singleton(userRole));
         Category category = new Category("Automotive");
         Offer offer = new Offer("Volkswagen Golf", "Very fast", 2300.0, user, category);
 
         User user1 = new User("Anna", passwordEncoder.encode("Anna123"), "anna@gmail.com");
-        user1.setRoles(Collections.singletonList(userRole));
+        user1.setRoles(Collections.singleton(userRole));
         Category category1 = new Category("Electronics");
         Offer offer1 = new Offer("iPhone 12", "Brand new", 5000.0, user1, category1);
 
         User user2 = new User("Mark", passwordEncoder.encode("Mark123"), "mark@gmail.com");
-        user2.setRoles(Collections.singletonList(userRole));
+        user2.setRoles(Collections.singleton(userRole));
         Category category2 = new Category("Real Estate");
         Offer offer2 = new Offer("2-Bedroom Apartment", "Spacious and modern", 3000.0, user2, category2);
 
         User user3 = new User("Emily", passwordEncoder.encode("Emily123"), "emily@gmail.com");
-        user3.setRoles(Collections.singletonList(userRole));
+        user3.setRoles(Collections.singleton(userRole));
         Category category3 = new Category("Fashion");
         Offer offer3 = new Offer("Designer Handbag", "Limited edition", 2000.0, user3, category3);
 

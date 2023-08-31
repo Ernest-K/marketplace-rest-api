@@ -4,6 +4,7 @@ import com.example.marketplace.dto.request.UpdateUserRequest;
 import com.example.marketplace.dto.response.UserResponse;
 import com.example.marketplace.exception.UserNotFoundException;
 import com.example.marketplace.mapper.UserMapper;
+import com.example.marketplace.model.RoleName;
 import com.example.marketplace.model.SecurityUser;
 import com.example.marketplace.model.User;
 import com.example.marketplace.repository.UserRepository;
@@ -11,6 +12,7 @@ import com.example.marketplace.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -119,6 +121,6 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         SecurityUser authenticatedSecurityUser = (SecurityUser) authentication.getPrincipal();
 
-        return userId.equals(authenticatedSecurityUser.getId());
+        return userId.equals(authenticatedSecurityUser.getId()) || authenticatedSecurityUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.name()));
     }
 }

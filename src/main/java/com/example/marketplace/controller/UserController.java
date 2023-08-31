@@ -25,15 +25,15 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> getAllUsers(){
         return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
-    @GetMapping("/users/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id){
-        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId){
+        return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('USER')")
-    @PutMapping("/users/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest updateUserRequest){
-        return new ResponseEntity<>(userService.updateUser(id, updateUserRequest), HttpStatus.OK);
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long userId, @RequestBody @Valid UpdateUserRequest updateUserRequest){
+        return new ResponseEntity<>(userService.updateUser(userId, updateUserRequest), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('USER')")

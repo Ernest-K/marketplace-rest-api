@@ -84,7 +84,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler
         return buildResponseEntity(apiError);
     }
 
-    @ExceptionHandler({UserNotFoundException.class, OfferNotFoundException.class, CategoryNotFoundException.class})
+    @ExceptionHandler({UserNotFoundException.class, RoleNotFoundException.class, OfferNotFoundException.class, CategoryNotFoundException.class})
     public ResponseEntity<Object> handleEntityNotFoundException(RuntimeException ex, WebRequest webRequest){
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
         apiError.setMessage(ex.getMessage());

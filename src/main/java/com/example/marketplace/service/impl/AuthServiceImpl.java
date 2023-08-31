@@ -3,6 +3,7 @@ package com.example.marketplace.service.impl;
 import com.example.marketplace.dto.request.LoginRequest;
 import com.example.marketplace.dto.request.RegisterRequest;
 import com.example.marketplace.dto.response.TokenResponse;
+import com.example.marketplace.exception.RoleNotFoundException;
 import com.example.marketplace.exception.UserExistsException;
 import com.example.marketplace.model.Role;
 import com.example.marketplace.model.RoleName;
@@ -15,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +35,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public TokenResponse login(LoginRequest loginRequest){
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+                loginRequest.getPassword()));
 
         String token = jwtUtils.generateToken(authentication);
         TokenResponse tokenResponse = new TokenResponse();
@@ -60,9 +60,8 @@ public class AuthServiceImpl implements AuthService {
         user.setUsername(registerRequest.getUsername());
         user.setEmail(registerRequest.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-
-        Role userRole = roleRepository.findByName(RoleName.ROLE_USER).orElseThrow(() -> new RuntimeException("Role not found"));
-        user.setRoles(Collections.singletonList(userRole));
+        Role userRole = roleRepository.findByName(RoleName.ROLE_USER).orElseThrow(() -> new RoleNotFoundException("Role: " + RoleName.ROLE_USER + " not found"));
+        user.setRoles(Collections.singleton(userRole));
 
         userRepository.save(user);
     }

@@ -19,12 +19,13 @@ public class Offer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 20)
+    @Column(length = 30, nullable = false)
     private String name;
 
-    @Column(length = 250)
+    @Column(length = 250, nullable = false)
     private String description;
 
+    @Column(nullable = false)
     private Double price;
 
     @ManyToOne(fetch = FetchType.LAZY)
