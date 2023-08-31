@@ -1,6 +1,7 @@
 package com.example.marketplace.controller;
 
 
+import com.example.marketplace.dto.request.CreateUserRequest;
 import com.example.marketplace.dto.request.UpdateUserRequest;
 import com.example.marketplace.dto.response.UserResponse;
 import com.example.marketplace.service.UserService;
@@ -25,9 +26,16 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> getAllUsers(){
         return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
+
     @GetMapping("/users/{userId}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId){
         return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/users")
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid CreateUserRequest createUserRequest){
+        return new ResponseEntity<>(userService.createUser(createUserRequest), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAnyRole('USER')")

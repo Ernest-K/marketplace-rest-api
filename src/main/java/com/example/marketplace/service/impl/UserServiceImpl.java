@@ -1,12 +1,17 @@
 package com.example.marketplace.service.impl;
 
+import com.example.marketplace.dto.request.CreateUserRequest;
 import com.example.marketplace.dto.request.UpdateUserRequest;
 import com.example.marketplace.dto.response.UserResponse;
+import com.example.marketplace.exception.RoleNotFoundException;
+import com.example.marketplace.exception.UserExistsException;
 import com.example.marketplace.exception.UserNotFoundException;
 import com.example.marketplace.mapper.UserMapper;
+import com.example.marketplace.model.Role;
 import com.example.marketplace.model.RoleName;
 import com.example.marketplace.model.SecurityUser;
 import com.example.marketplace.model.User;
+import com.example.marketplace.repository.RoleRepository;
 import com.example.marketplace.repository.UserRepository;
 import com.example.marketplace.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -46,6 +53,40 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId)
                 .map(userMapper::mapToDto)
                 .orElseThrow(()-> new UserNotFoundException("No user with id: " + userId));
+    }
+
+    @Override
+    @Transactional
+    public UserResponse createUser(CreateUserRequest createUserRequest) {
+        if (userRepository.existsByUsername(createUserRequest.getUsername())){
+            throw new UserExistsException("User with name: " + createUserRequest.getUsername() + " already exists");
+        }
+        if (userRepository.existsByEmail(createUserRequest.getEmail())){
+            throw new UserExistsException("User with email: " + createUserRequest.getEmail() + " already exists");
+        }
+
+        User user = new User();
+
+        Map<String, Object> dtoMap = convertDtoToMap(createUserRequest);
+
+        for (Map.Entry<String, Object> entry : dtoMap.entrySet()) {
+            String fieldName = entry.getKey();
+            Object newValue = entry.getValue();
+            if (newValue != null){
+                if (fieldName.equals("password")){
+                    updateFieldInEntity(user, fieldName, passwordEncoder.encode((String) newValue));
+                }else{
+                    updateFieldInEntity(user, fieldName, newValue);
+                }
+            }
+        }
+
+        Role userRole = roleRepository.findByName(RoleName.ROLE_USER).orElseThrow(() -> new RoleNotFoundException("Role: " + RoleName.ROLE_USER + " not found"));
+        user.setRoles(Collections.singleton(userRole));
+
+        userRepository.save(user);
+
+        return userMapper.mapToDto(user);
     }
 
     @Override
@@ -89,15 +130,15 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(userToDelete);
     }
 
-    private Map<String, Object> convertDtoToMap(UpdateUserRequest updateUserRequest){
+    private <T> Map<String, Object> convertDtoToMap(T userRequest){
         Map<String, Object> dtoMap = new HashMap<>();
 
-        Field[] fields = updateUserRequest.getClass().getDeclaredFields();
+        Field[] fields = userRequest.getClass().getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
             Object value = null;
             try {
-                value = field.get(updateUserRequest);
+                value = field.get(userRequest);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
