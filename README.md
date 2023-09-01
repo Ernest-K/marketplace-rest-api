@@ -55,7 +55,7 @@ The app defines following CRUD APIs.
 | GET    | /api/users/{userId} | Get user by *userId* | |
 | GET    | /api/users/{userId}/offers | Get posts created by user with *userId* | |
 | POST   | /api/users | Create user (only for admins) | [JSON](#createUserRequest) |
-| PUT    | /api/users/{userId} | Update user (if profile belongs to logged in user or logged in user is admin) | [JSON](#userupdate) |
+| PUT    | /api/users/{userId} | Update user (if profile belongs to logged in user or logged in user is admin) | [JSON](#updateUserRequest) |
 | DELETE | /api/users/{username} | Delete user (for logged in user or admin) | |
 
 
