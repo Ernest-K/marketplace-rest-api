@@ -81,7 +81,7 @@ public class OfferRepositoryTest {
         Category category = Category.builder().name("Electronics").build();
         categoryRepository.save(category);
 
-        Offer offer = Offer.builder().name("Laptop").category(category).build();
+        Offer offer = Offer.builder().name("Laptop").description("Lorem ipsum").price(500.0).category(category).build();
         offerRepository.save(offer);
 
         Page<Offer> offersByCategory = offerRepository.findAllByCategoryId(category.getId(), Pageable.unpaged());
@@ -91,10 +91,10 @@ public class OfferRepositoryTest {
 
     @Test
     public void FindAllByUserId_ValidId_ReturnOfferPage() {
-        User user = User.builder().username("testUser").build();
+        User user = User.builder().username("testUser").email("test@example.com").password("password").build();
         userRepository.save(user);
 
-        Offer offer = Offer.builder().name("Laptop").user(user).build();
+        Offer offer = Offer.builder().name("Laptop").description("Lorem ipsum").price(500.0).user(user).build();
         offerRepository.save(offer);
 
         Page<Offer> offersByCategory = offerRepository.findAllByUserId(user.getId(), Pageable.unpaged());
@@ -108,9 +108,9 @@ public class OfferRepositoryTest {
         Category books = Category.builder().name("Books").build();
         categoryRepository.saveAll(List.of(electronics, books));
 
-        Offer offer1 = Offer.builder().name("Laptop").category(electronics).build();
-        Offer offer2 = Offer.builder().name("Phone").category(electronics).build();
-        Offer offer3 = Offer.builder().name("Novel").category(books).build();
+        Offer offer1 = Offer.builder().name("Laptop").description("Lorem ipsum").price(500.0).category(electronics).build();
+        Offer offer2 = Offer.builder().name("Phone").description("Lorem ipsum").price(260.0).category(electronics).build();
+        Offer offer3 = Offer.builder().name("Novel").description("Lorem ipsum").price(10.0).category(books).build();
         offerRepository.saveAll(List.of(offer1, offer2, offer3));
 
         List<OfferCount> offerCounts = offerRepository.countTotalOffersByCategory();
@@ -132,8 +132,8 @@ public class OfferRepositoryTest {
 
     @Test
     public void SearchOffers_Query_ReturnOfferPage() {
-        Offer offer1 = Offer.builder().name("Laptop").description("Powerful laptop").build();
-        Offer offer2 = Offer.builder().name("Phone").description("Latest smartphone").build();
+        Offer offer1 = Offer.builder().name("Laptop").description("Powerful laptop").price(500.0).build();
+        Offer offer2 = Offer.builder().name("Phone").description("Latest smartphone").price(260.0).build();
         offerRepository.saveAll(Arrays.asList(offer1, offer2));
 
         Page<Offer> searchResults = offerRepository.searchOffers("Laptop", Pageable.unpaged());
