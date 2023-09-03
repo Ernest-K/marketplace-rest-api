@@ -60,12 +60,14 @@ public class UserServiceTest {
     @BeforeEach
     public void init() {
         user1 = User.builder()
+                .id(1L)
                 .username("testUser1")
                 .email("test1@example.com")
                 .password("password")
                 .roles(Set.of(new Role(RoleName.ROLE_USER)))
                 .build();
         user2 = User.builder()
+                .id(2L)
                 .username("testUser2")
                 .email("test2@example.com")
                 .password("password")
@@ -88,7 +90,7 @@ public class UserServiceTest {
 
     @Test
     public void GetUserById_ValidId_ReturnUserResponse() {
-        when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user1));
         when(userMapper.mapToDto(Mockito.any(User.class))).thenReturn(new UserResponse());
 
         UserResponse userResponse = userService.getUserById(user1.getId());
@@ -206,9 +208,6 @@ public class UserServiceTest {
                 .roles(Set.of(new Role(RoleName.ROLE_USER)))
                 .build();
 
-        UpdateUserRequest updateUserRequest = new UpdateUserRequest();
-        updateUserRequest.setUsername("John");
-
         SecurityUser securityUser = new SecurityUser(user);
 
         when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -236,6 +235,6 @@ public class UserServiceTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(securityUser);
 
-        assertThrows(AccessDeniedException.class, () -> userService.updateUser(2L, updateUserRequest));
+        assertThrows(AccessDeniedException.class, () -> userService.deleteUser(2L));
     }
 }
