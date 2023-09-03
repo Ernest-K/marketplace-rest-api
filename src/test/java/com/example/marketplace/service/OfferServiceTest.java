@@ -251,7 +251,7 @@ public class OfferServiceTest {
     }
 
     @Test
-    public void DeleteOffer_InvalidOfferId_ReturnVoid() {
+    public void DeleteOffer_InvalidOfferId_ThrowAccessDeniedException() {
         User user = User.builder()
                 .id(1L)
                 .username("john_doe")
