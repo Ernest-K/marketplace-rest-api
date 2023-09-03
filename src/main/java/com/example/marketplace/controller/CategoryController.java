@@ -31,15 +31,15 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PutMapping("/categories/{id}")
-    ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody @Valid CategoryRequest categoryRequest){
-        return new ResponseEntity<>(categoryService.updateCategory(id, categoryRequest), HttpStatus.OK);
+    @PutMapping("/categories/{categoryId}")
+    ResponseEntity<Category> updateCategory(@PathVariable Long categoryId, @RequestBody @Valid CategoryRequest categoryRequest){
+        return new ResponseEntity<>(categoryService.updateCategory(categoryId, categoryRequest), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @DeleteMapping("/categories/{id}")
-    ResponseEntity<String> deleteCategory(@PathVariable Long id){
-        categoryService.deleteCategory(id);
-        return new ResponseEntity<>("Category id: " + id + " deleted successfully", HttpStatus.OK);
+    @DeleteMapping("/categories/{categoryId}")
+    ResponseEntity<String> deleteCategory(@PathVariable Long categoryId){
+        categoryService.deleteCategory(categoryId);
+        return new ResponseEntity<>("Category id: " + categoryId + " deleted successfully", HttpStatus.OK);
     }
 }

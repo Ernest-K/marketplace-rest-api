@@ -1,12 +1,14 @@
 package com.example.marketplace.service;
 
 import com.example.marketplace.dto.request.CreateUserRequest;
+import com.example.marketplace.dto.request.UpdateUserRequest;
 import com.example.marketplace.dto.response.UserResponse;
 import com.example.marketplace.exception.UserExistsException;
 import com.example.marketplace.exception.UserNotFoundException;
 import com.example.marketplace.mapper.UserMapper;
 import com.example.marketplace.model.Role;
 import com.example.marketplace.model.RoleName;
+import com.example.marketplace.model.SecurityUser;
 import com.example.marketplace.model.User;
 import com.example.marketplace.repository.RoleRepository;
 import com.example.marketplace.repository.UserRepository;
@@ -18,6 +20,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -25,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -39,6 +46,10 @@ public class UserServiceTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private RoleRepository roleRepository;
+    @Mock
+    private SecurityContext securityContext;
+    @Mock
+    private Authentication authentication;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -48,8 +59,20 @@ public class UserServiceTest {
 
     @BeforeEach
     public void init() {
-        user1 = User.builder().username("testUser1").email("test1@example.com").password("password").roles(Set.of(new Role(RoleName.ROLE_USER))).build();
-        user2 = User.builder().username("testUser2").email("test2@example.com").password("password").roles(Set.of(new Role(RoleName.ROLE_USER))).build();
+        user1 = User.builder()
+                .username("testUser1")
+                .email("test1@example.com")
+                .password("password")
+                .roles(Set.of(new Role(RoleName.ROLE_USER)))
+                .build();
+        user2 = User.builder()
+                .username("testUser2")
+                .email("test2@example.com")
+                .password("password")
+                .roles(Set.of(new Role(RoleName.ROLE_USER)))
+                .build();
+
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
@@ -123,5 +146,96 @@ public class UserServiceTest {
         when(userRepository.existsByEmail("existing_email@example.com")).thenReturn(true);
 
         assertThrows(UserExistsException.class, () -> userService.createUser(createUserRequest));
+    }
+
+    @Test
+    public void UpdateUser_UpdateUserRequest_ReturnUserResponse() {
+        User user = User.builder()
+                .id(1L)
+                .username("john_doe")
+                .email("john.doe@example.com")
+                .password("secretpassword")
+                .roles(Set.of(new Role(RoleName.ROLE_USER)))
+                .build();
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest();
+        updateUserRequest.setUsername("John");
+
+        SecurityUser securityUser = new SecurityUser(user);
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(securityUser);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
+        when(userMapper.mapToDto(Mockito.any(User.class))).thenReturn(new UserResponse());
+
+        UserResponse userResponse = userService.updateUser(user.getId(), updateUserRequest);
+
+        verify(userRepository, times(1)).save(any(User.class));
+        assertThat(userResponse).isNotNull();
+    }
+
+    @Test
+    public void UpdateUser_UpdateUserRequest_ThrowAccessDeniedException() {
+        User user = User.builder()
+                .id(1L)
+                .username("john_doe")
+                .email("john.doe@example.com")
+                .password("secretpassword")
+                .roles(Set.of(new Role(RoleName.ROLE_USER)))
+                .build();
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest();
+        updateUserRequest.setUsername("John");
+
+        SecurityUser securityUser = new SecurityUser(user);
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(securityUser);
+
+        assertThrows(AccessDeniedException.class, () -> userService.updateUser(2L, updateUserRequest));
+    }
+
+    @Test
+    public void DeleteUser_ValidUserId_ReturnVoid() {
+        User user = User.builder()
+                .id(1L)
+                .username("john_doe")
+                .email("john.doe@example.com")
+                .password("secretpassword")
+                .roles(Set.of(new Role(RoleName.ROLE_USER)))
+                .build();
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest();
+        updateUserRequest.setUsername("John");
+
+        SecurityUser securityUser = new SecurityUser(user);
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(securityUser);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+
+        assertAll(() -> userService.deleteUser(user.getId()));
+    }
+
+    @Test
+    public void DeleteUser_InvalidUserId_ThrowAccessDeniedException() {
+        User user = User.builder()
+                .id(1L)
+                .username("john_doe")
+                .email("john.doe@example.com")
+                .password("secretpassword")
+                .roles(Set.of(new Role(RoleName.ROLE_USER)))
+                .build();
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest();
+        updateUserRequest.setUsername("John");
+
+        SecurityUser securityUser = new SecurityUser(user);
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(securityUser);
+
+        assertThrows(AccessDeniedException.class, () -> userService.updateUser(2L, updateUserRequest));
     }
 }
