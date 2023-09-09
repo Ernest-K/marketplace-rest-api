@@ -33,9 +33,13 @@ Run the app using maven
 The app will start running at <http://localhost:8080>
 
 You can change some properties in [application.properties](src/main/resources/application.properties) file:
-
-+ change `spring.datasource.username` and `spring.datasource.password` as per your datasource installation
-+ change `security.jwt.token.expiration` as token expiration time in ms
+- choose an active profile `spring.profiles.active`
+  - `local` with in-memory datasource (H2)
+  - `dev` with postgres datasource
+    
+    before you launch the application, run postgres container with `docker compose up -d db` command
+- change `security.jwt.token.expiration` as token expiration time in ms
+- change `spring.datasource.username` and `spring.datasource.password` as per your datasource installation in profile properties file
 
 
 ## API endpoints
