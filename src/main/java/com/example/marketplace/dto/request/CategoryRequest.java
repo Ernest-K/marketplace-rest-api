@@ -3,12 +3,14 @@ package com.example.marketplace.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class CategoryRequest {
 
     @Size(max = 30, message = "Category name is too long (max 30 characters)")

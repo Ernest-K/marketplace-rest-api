@@ -33,16 +33,21 @@ public class CategoryServiceTest {
 
     @Test
     public void GetCategories_ReturnCategoryList() {
-        Category category = Category.builder()
+        Category category1 = Category.builder()
                 .id(1L)
                 .name("electronics")
                 .build();
+        Category category2 = Category.builder()
+                .id(2L)
+                .name("books")
+                .build();
 
-        when(categoryRepository.findAll()).thenReturn(List.of(category));
+        when(categoryRepository.findAll()).thenReturn(List.of(category1, category2));
 
         List<Category> categoryList = categoryService.getCategories();
 
         assertThat(categoryList).isNotNull();
+        assertThat(categoryList).hasSize(2);
     }
 
     @Test

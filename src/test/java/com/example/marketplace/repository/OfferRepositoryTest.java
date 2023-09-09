@@ -30,8 +30,8 @@ public class OfferRepositoryTest {
 
     @Test
     public void Save_ValidOffer_ReturnSavedOffer() {
-        User user = User.builder().username("testUser").email("test@example.com").build();
-        Category category = Category.builder().name("Electronics").build();
+        User user = User.builder().username("john_doe").email("john.doe@example.com").build();
+        Category category = Category.builder().name("electronics").build();
         Offer offer = Offer.builder().name("Laptop").description("Great device").price(300.0).user(user).category(category).build();
 
         Offer savedOffer = offerRepository.save(offer);
@@ -40,9 +40,9 @@ public class OfferRepositoryTest {
         assertThat(savedOffer.getName()).isEqualTo("Laptop");
         assertThat(savedOffer.getDescription()).isEqualTo("Great device");
         assertThat(savedOffer.getPrice()).isEqualTo(300.0);
-        assertThat(savedOffer.getUser().getUsername()).isEqualTo("testUser");
-        assertThat(savedOffer.getUser().getEmail()).isEqualTo("test@example.com");
-        assertThat(savedOffer.getCategory().getName()).isEqualTo("Electronics");
+        assertThat(savedOffer.getUser().getUsername()).isEqualTo("john_doe");
+        assertThat(savedOffer.getUser().getEmail()).isEqualTo("john.doe@example.com");
+        assertThat(savedOffer.getCategory().getName()).isEqualTo("electronics");
     }
 
     @Test
@@ -78,10 +78,10 @@ public class OfferRepositoryTest {
 
     @Test
     public void FindAllByCategoryId_ValidId_ReturnOfferPage() {
-        Category category = Category.builder().name("Electronics").build();
+        Category category = Category.builder().name("electronics").build();
         categoryRepository.save(category);
 
-        Offer offer = Offer.builder().name("Laptop").description("Lorem ipsum").price(500.0).category(category).build();
+        Offer offer = Offer.builder().name("Laptop").description("Great device").price(500.0).category(category).build();
         offerRepository.save(offer);
 
         Page<Offer> offersByCategory = offerRepository.findAllByCategoryId(category.getId(), Pageable.unpaged());
@@ -91,10 +91,10 @@ public class OfferRepositoryTest {
 
     @Test
     public void FindAllByUserId_ValidId_ReturnOfferPage() {
-        User user = User.builder().username("testUser").email("test@example.com").password("password").build();
+        User user = User.builder().username("john_doe").email("john.doe@example.com").password("secretpassword").build();
         userRepository.save(user);
 
-        Offer offer = Offer.builder().name("Laptop").description("Lorem ipsum").price(500.0).user(user).build();
+        Offer offer = Offer.builder().name("Laptop").description("Great device").price(500.0).user(user).build();
         offerRepository.save(offer);
 
         Page<Offer> offersByCategory = offerRepository.findAllByUserId(user.getId(), Pageable.unpaged());
@@ -104,13 +104,13 @@ public class OfferRepositoryTest {
 
     @Test
     public void countTotalOffersByCategory_ReturnOfferCountList() {
-        Category electronics = Category.builder().name("Electronics").build();
-        Category books = Category.builder().name("Books").build();
+        Category electronics = Category.builder().name("electronics").build();
+        Category books = Category.builder().name("books").build();
         categoryRepository.saveAll(List.of(electronics, books));
 
-        Offer offer1 = Offer.builder().name("Laptop").description("Lorem ipsum").price(500.0).category(electronics).build();
-        Offer offer2 = Offer.builder().name("Phone").description("Lorem ipsum").price(260.0).category(electronics).build();
-        Offer offer3 = Offer.builder().name("Novel").description("Lorem ipsum").price(10.0).category(books).build();
+        Offer offer1 = Offer.builder().name("Laptop").description("Great device").price(500.0).category(electronics).build();
+        Offer offer2 = Offer.builder().name("Phone").description("Latest smartphone").price(260.0).category(electronics).build();
+        Offer offer3 = Offer.builder().name("Novel").description("Interesting storyline").price(10.0).category(books).build();
         offerRepository.saveAll(List.of(offer1, offer2, offer3));
 
         List<OfferCount> offerCounts = offerRepository.countTotalOffersByCategory();
@@ -118,13 +118,13 @@ public class OfferRepositoryTest {
         assertThat(offerCounts).hasSize(2);
 
         OfferCount electronicsCount = offerCounts.stream()
-                .filter(count -> count.getCategoryName().equals("Electronics"))
+                .filter(count -> count.getCategoryName().equals("electronics"))
                 .findFirst().orElse(null);
         assertThat(electronicsCount).isNotNull();
         assertThat(electronicsCount.getTotal()).isEqualTo(2L);
 
         OfferCount booksCount = offerCounts.stream()
-                .filter(count -> count.getCategoryName().equals("Books"))
+                .filter(count -> count.getCategoryName().equals("books"))
                 .findFirst().orElse(null);
         assertThat(booksCount).isNotNull();
         assertThat(booksCount.getTotal()).isEqualTo(1L);
@@ -132,7 +132,7 @@ public class OfferRepositoryTest {
 
     @Test
     public void SearchOffers_Query_ReturnOfferPage() {
-        Offer offer1 = Offer.builder().name("Laptop").description("Powerful laptop").price(500.0).build();
+        Offer offer1 = Offer.builder().name("Laptop").description("Great device").price(500.0).build();
         Offer offer2 = Offer.builder().name("Phone").description("Latest smartphone").price(260.0).build();
         offerRepository.saveAll(Arrays.asList(offer1, offer2));
 
